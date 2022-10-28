@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from turtle import distance
+from unittest import skip
 import pandas as pd
 import numpy as np
 import random
@@ -9,10 +10,6 @@ file = open('coordenadas.txt', 'r')
 
 coordenadas_txt = file.readlines()
 
-
-# print(coordenadas_txt)
-
-
 coordenadas = np.arange(400, dtype=float).reshape(100, 4)
 
 for i in range(100):
@@ -20,8 +17,6 @@ for i in range(100):
     coordenadas[i][1] = 0
     coordenadas[i][2] = 0
     coordenadas[i][3] = 0
-
-# print(coordenadas_txt)
 
 contador_linhas = 0
 
@@ -33,78 +28,179 @@ for line in coordenadas_txt:
     for i in range(len(line)):
 
         if line[i] != (" "):
-            #print('elemento = ' + str(line[i]) + '  Valor de i = ' +str(i) + ' Valor de aux-cont = '+str(i-cont))
             aux[i-cont] = line[i]
-            #print('elemento = ' + line[i] + '  Valor de i = ' + str(i))
         else:
             cont = i+1
             contador += 1
-            #print('elemento = ' + line[i] + '  Valor de i = ' +str(i) + ' Valor de aux-cont = '+str(i-cont))
-            #print("contador = "+str(contador))
         if contador == 1:
             x_temp = float(''.join(aux))
-            #print("x = "+str(x_temp))
             coordenadas[contador_linhas][1] = x_temp
             aux = (['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'])
             contador += 1
-            #print("contador = "+str(contador))
-            # print(aux)
         if contador == 3:
             y_temp = float(''.join(aux))
-            #print("y = "+str(y_temp))
             coordenadas[contador_linhas][2] = y_temp
             aux = (['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'])
             contador += 1
-            #print("contador = "+str(contador))
+
         if contador == 5:
             z_temp = float(''.join(aux))
-            #print("z = "+str(z_temp))
             coordenadas[contador_linhas][3] = z_temp
             aux = (['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'])
             contador += 1
-            #print("contador = "+str(contador))
     contador_linhas += 1
 
 
-atual = 0
-proximo = 0
-distancia = 0
+def randompath():
 
-atual_coord = np.array([0, 0, 0], dtype=float)
-proximo_coord = np.array([0, 0, 0], dtype=float)
+    proximo = 0
+    distancia = 0
 
-posicao = np.arange(100)
-posicao = np.delete(posicao, 0)
+    atual_coord = np.array([0, 0, 0], dtype=float)
+    proximo_coord = np.array([0, 0, 0], dtype=float)
 
-controle = True
-
-while controle:
-
-    posisao = random.shuffle(posicao)
-    proximo = posicao[0]
+    posicao = np.arange(100)
     posicao = np.delete(posicao, 0)
 
-    proximo_coord[0] = coordenadas[proximo][1]
-    proximo_coord[1] = coordenadas[proximo][2]
-    proximo_coord[2] = coordenadas[proximo][3]
+    controle = True
 
-    #print('coordenada atual')
-    # print(atual_coord)
-    #print('proxima coordenada')
-    # print(proximo_coord)
+    while controle:
 
-    distancia_temp = np.linalg.norm(atual_coord - proximo_coord)
+        posisao = random.shuffle(posicao)
+        proximo = posicao[0]
+        posicao = np.delete(posicao, 0)
 
-    distancia += distancia_temp
+        proximo_coord[0] = coordenadas[proximo][1]
+        proximo_coord[1] = coordenadas[proximo][2]
+        proximo_coord[2] = coordenadas[proximo][3]
 
-    atual_coord[0] = proximo_coord[0]
-    atual_coord[1] = proximo_coord[1]
-    atual_coord[2] = proximo_coord[2]
+        distancia_temp = np.linalg.norm(atual_coord - proximo_coord)
 
-    # print(distancia)
+        distancia += distancia_temp
 
-    if len(posicao.tolist()) == 0:
-        controle = False
+        atual_coord[0] = proximo_coord[0]
+        atual_coord[1] = proximo_coord[1]
+        atual_coord[2] = proximo_coord[2]
+
+        if len(posicao.tolist()) == 0:
+            controle = False
+
+    print('Distancia percorrida = ' + str(distancia))
 
 
-print('Distancia percorrida = ' + str(distancia))
+def inorderpath():  # parece errado
+
+    proximo = 0
+    distancia = 0
+
+    atual_coord = np.array([0, 0, 0], dtype=float)
+    proximo_coord = np.array([0, 0, 0], dtype=float)
+
+    posicao = np.arange(100)
+    posicao = np.delete(posicao, 0)
+
+    controle = True
+
+    distancias = np.arange(100, dtype=float)
+    linha = 0
+
+    while controle:
+
+        proximo = posicao[0]
+        posicao = np.delete(posicao, 0)
+
+        proximo_coord[0] = coordenadas[proximo][1]
+        proximo_coord[1] = coordenadas[proximo][2]
+        proximo_coord[2] = coordenadas[proximo][3]
+
+        distancia_temp = np.linalg.norm(atual_coord - proximo_coord)
+
+        distancias[linha] = distancia_temp
+
+        distancia += distancia_temp
+
+        atual_coord[0] = proximo_coord[0]
+        atual_coord[1] = proximo_coord[1]
+        atual_coord[2] = proximo_coord[2]
+
+        if len(posicao.tolist()) == 0:
+            controle = False
+            distancia_temp = np.linalg.norm(atual_coord - [0, 0, 0])
+            distancias[linha+1] = distancia_temp
+            distancia += distancia_temp
+        linha += 1
+
+    print('Distancia percorrida InOrder= ' + str(distancia))
+
+
+def closestpath():
+
+    coordenadas_aux = np.delete(coordenadas, 0, 0)  # coordenadas sem o sol
+
+    atual_coord = np.array([0, 0, 0], dtype=float)
+    proximo_coord = np.array([0, 0, 0], dtype=float)
+
+    caminho = np.zeros(101, dtype=int)
+    caminho_aux = 1
+
+    distancia_percorrida = 0
+
+    controle = True
+
+    range_for = 99
+
+    while controle:
+
+        distancias = np.ones(100)
+        distancias = distancias*1000000
+
+        for i in range(range_for):  # gera as distancias a partir do ponto atual
+
+            proximo_coord[0] = coordenadas_aux[i][1]
+            proximo_coord[1] = coordenadas_aux[i][2]
+            proximo_coord[2] = coordenadas_aux[i][3]
+
+            distancias[i] = np.linalg.norm(atual_coord - proximo_coord)
+
+        # print(distancias)
+        # print('------------------------------------------------------------------------------- ' +
+        #       str(np.where(distancias == np.min(distancias))[0][0]))
+
+        distancia_percorrida += np.min(distancias)
+
+        posisao_no_vetor = (np.where(distancias == np.min(distancias))[0][0])
+
+        caminho[caminho_aux] = coordenadas_aux[posisao_no_vetor][0]
+        caminho_aux += 1
+
+        atual_coord[0] = coordenadas_aux[posisao_no_vetor][1]
+        atual_coord[1] = coordenadas_aux[posisao_no_vetor][2]
+        atual_coord[2] = coordenadas_aux[posisao_no_vetor][3]
+
+        coordenadas_aux = np.delete(coordenadas_aux, posisao_no_vetor, 0)
+
+        # print(atual_coord)
+        # print(distancia_percorrida)
+        # print(coordenadas[posisao_no_vetor][0])
+
+        range_for = range_for-1
+
+        # if (range_for == 95):
+        #     controle = False
+
+        if (coordenadas_aux.shape[0] == 0):
+            controle = False
+
+    distancia_percorrida += np.linalg.norm(atual_coord - [0, 0, 0])
+
+    print('Distancia Percorrida ClosestPath = '+str(distancia_percorrida))
+
+    print(caminho)
+
+
+closestpath()
+
+inorderpath()
+
+
+# fazer modelo 3D das rotas geradas
