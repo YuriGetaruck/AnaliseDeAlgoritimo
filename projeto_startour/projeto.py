@@ -63,12 +63,16 @@ def randompath():
     posicao = np.arange(100)
     posicao = np.delete(posicao, 0)
 
+    caminho = np.zeros(101, dtype=float)
+    i = 0
+
     controle = True
 
     while controle:
 
-        posisao = random.shuffle(posicao)
+        random.shuffle(posicao)
         proximo = posicao[0]
+        caminho[i+1] = proximo
         posicao = np.delete(posicao, 0)
 
         proximo_coord[0] = coordenadas[proximo][1]
@@ -86,7 +90,11 @@ def randompath():
         if len(posicao.tolist()) == 0:
             controle = False
 
-    return distancia
+        i += 1
+
+    print(distancia)
+    caminho = caminho.astype(int)
+    return caminho
 
 
 def inorderpath():  # parece errado
@@ -230,13 +238,9 @@ def farestpath():
 
             distancias[i] = np.linalg.norm(atual_coord - proximo_coord)
 
-        # print(distancias)
-        # print('------------------------------------------------------------------------------- ' +
-        #       str(np.where(distancias == np.min(distancias))[0][0]))
-
         distancia_percorrida += np.max(distancias)
 
-        posisao_no_vetor = (np.where(distancias == np.min(distancias))[0][0])
+        posisao_no_vetor = (np.where(distancias == np.max(distancias))[0][0])
 
         caminho[caminho_aux] = coordenadas_aux[posisao_no_vetor][0]
         caminho_aux += 1
@@ -247,14 +251,7 @@ def farestpath():
 
         coordenadas_aux = np.delete(coordenadas_aux, posisao_no_vetor, 0)
 
-        # print(atual_coord)
-        # print(distancia_percorrida)
-        # print(coordenadas[posisao_no_vetor][0])
-
         range_for = range_for-1
-
-        # if (range_for == 95):
-        #     controle = False
 
         if (coordenadas_aux.shape[0] == 0):
             controle = False
@@ -265,46 +262,51 @@ def farestpath():
 
     print(caminho)
 
-
-# vetor = np.zeros(10000, dtype=float)
-# for i in range(10000):
-#     vetor[i] = randompath()
-
-# plt.figure()
-# plt.hist(vetor)
-# plt.show()
-
-ax = plt.gca(projection="3d")
-
-coordenadas_plot = np.arange(300, dtype=float)
-coordenadas_plot = coordenadas_plot.reshape(100, 3)
-
-coordenadas_x = np.arange(101, dtype=float)
-coordenadas_y = np.arange(101, dtype=float)
-coordenadas_z = np.arange(101, dtype=float)
-
-# print(coordenadas_plot)
-
-caminho = closestpath()
-
-for i in range(101):
-    coordenadas_x[i] = coordenadas[caminho[i]][1]
-    coordenadas_y[i] = coordenadas[caminho[i]][2]
-    coordenadas_z[i] = coordenadas[caminho[i]][3]
-
-print(coordenadas_plot)
-
-plt.figure()
-
-ax.scatter(coordenadas_x[1:100], coordenadas_y[1:100],
-           coordenadas_z[1:100], c='r', s=15)
-
-ax.plot(coordenadas_x, coordenadas_y, coordenadas_z, color='k')
-
-ax.scatter(0, 0, 0, c='b', s=80)
+    return caminho
 
 
-plt.show()
+def random_comportamento(tamanho):
+    vetor = np.zeros(tamanho, dtype=float)
+    for i in range(tamanho):
+        vetor[i] = randompath()
 
+    plt.figure()
+    plt.hist(vetor)
+    plt.show()
+    plt.figure()
+    plt.plot(np.sort(vetor))
+    plt.show()
+
+
+def plota_caminho(caminho):
+    ax = plt.gca(projection="3d")
+
+    coordenadas_plot = np.arange(300, dtype=float)
+    coordenadas_plot = coordenadas_plot.reshape(100, 3)
+
+    coordenadas_x = np.arange(101, dtype=float)
+    coordenadas_y = np.arange(101, dtype=float)
+    coordenadas_z = np.arange(101, dtype=float)
+
+    for i in range(101):
+        coordenadas_x[i] = coordenadas[caminho[i]][1]
+        coordenadas_y[i] = coordenadas[caminho[i]][2]
+        coordenadas_z[i] = coordenadas[caminho[i]][3]
+
+    ax.scatter(coordenadas_x[1:100], coordenadas_y[1:100],
+               coordenadas_z[1:100], c='r', s=15)
+
+    ax.plot(coordenadas_x, coordenadas_y, coordenadas_z, color='k')
+
+    ax.scatter(0, 0, 0, c='b', s=80)
+
+    plt.show()
+
+
+print(randompath())
+
+plota_caminho(randompath())
+
+plota_caminho(closestpath())
 
 # fazer modelo 3D das rotas geradas
