@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import random
 from matplotlib import pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 file = open('coordenadas.txt', 'r')
 
@@ -197,6 +198,8 @@ def closestpath():
 
     print(caminho)
 
+    return caminho
+
 
 def farestpath():
 
@@ -258,19 +261,49 @@ def farestpath():
 
     distancia_percorrida += np.linalg.norm(atual_coord - [0, 0, 0])
 
-    print('Distancia Percorrida ClosestPath = '+str(distancia_percorrida))
+    print('Distancia Percorrida FarestPath = '+str(distancia_percorrida))
 
     print(caminho)
 
 
-farestpath()
+# vetor = np.zeros(10000, dtype=float)
+# for i in range(10000):
+#     vetor[i] = randompath()
 
-vetor = np.zeros(10000, dtype=float)
-for i in range(10000):
-    vetor[i] = randompath()
+# plt.figure()
+# plt.hist(vetor)
+# plt.show()
+
+ax = plt.gca(projection="3d")
+
+coordenadas_plot = np.arange(300, dtype=float)
+coordenadas_plot = coordenadas_plot.reshape(100, 3)
+
+coordenadas_x = np.arange(101, dtype=float)
+coordenadas_y = np.arange(101, dtype=float)
+coordenadas_z = np.arange(101, dtype=float)
+
+# print(coordenadas_plot)
+
+caminho = closestpath()
+
+for i in range(101):
+    coordenadas_x[i] = coordenadas[caminho[i]][1]
+    coordenadas_y[i] = coordenadas[caminho[i]][2]
+    coordenadas_z[i] = coordenadas[caminho[i]][3]
+
+print(coordenadas_plot)
 
 plt.figure()
-plt.hist(vetor)
+
+ax.scatter(coordenadas_x[1:100], coordenadas_y[1:100],
+           coordenadas_z[1:100], c='r', s=15)
+
+ax.plot(coordenadas_x, coordenadas_y, coordenadas_z, color='k')
+
+ax.scatter(0, 0, 0, c='b', s=80)
+
+
 plt.show()
 
 
