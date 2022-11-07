@@ -4,7 +4,7 @@ from unittest import skip
 import pandas as pd
 import numpy as np
 import random
-
+from matplotlib import pyplot as plt
 
 file = open('coordenadas.txt', 'r')
 
@@ -85,7 +85,7 @@ def randompath():
         if len(posicao.tolist()) == 0:
             controle = False
 
-    print('Distancia percorrida = ' + str(distancia))
+    return distancia
 
 
 def inorderpath():  # parece errado
@@ -198,9 +198,80 @@ def closestpath():
     print(caminho)
 
 
-closestpath()
+def farestpath():
 
-inorderpath()
+    coordenadas_aux = np.delete(coordenadas, 0, 0)  # coordenadas sem o sol
+
+    atual_coord = np.array([0, 0, 0], dtype=float)
+    proximo_coord = np.array([0, 0, 0], dtype=float)
+
+    caminho = np.zeros(101, dtype=int)
+    caminho_aux = 1
+
+    distancia_percorrida = 0
+
+    controle = True
+
+    range_for = 99
+
+    while controle:
+
+        distancias = np.ones(100)
+        distancias = distancias*1000000
+
+        for i in range(range_for):  # gera as distancias a partir do ponto atual
+
+            proximo_coord[0] = coordenadas_aux[i][1]
+            proximo_coord[1] = coordenadas_aux[i][2]
+            proximo_coord[2] = coordenadas_aux[i][3]
+
+            distancias[i] = np.linalg.norm(atual_coord - proximo_coord)
+
+        # print(distancias)
+        # print('------------------------------------------------------------------------------- ' +
+        #       str(np.where(distancias == np.min(distancias))[0][0]))
+
+        distancia_percorrida += np.max(distancias)
+
+        posisao_no_vetor = (np.where(distancias == np.min(distancias))[0][0])
+
+        caminho[caminho_aux] = coordenadas_aux[posisao_no_vetor][0]
+        caminho_aux += 1
+
+        atual_coord[0] = coordenadas_aux[posisao_no_vetor][1]
+        atual_coord[1] = coordenadas_aux[posisao_no_vetor][2]
+        atual_coord[2] = coordenadas_aux[posisao_no_vetor][3]
+
+        coordenadas_aux = np.delete(coordenadas_aux, posisao_no_vetor, 0)
+
+        # print(atual_coord)
+        # print(distancia_percorrida)
+        # print(coordenadas[posisao_no_vetor][0])
+
+        range_for = range_for-1
+
+        # if (range_for == 95):
+        #     controle = False
+
+        if (coordenadas_aux.shape[0] == 0):
+            controle = False
+
+    distancia_percorrida += np.linalg.norm(atual_coord - [0, 0, 0])
+
+    print('Distancia Percorrida ClosestPath = '+str(distancia_percorrida))
+
+    print(caminho)
+
+
+farestpath()
+
+vetor = np.zeros(10000, dtype=float)
+for i in range(10000):
+    vetor[i] = randompath()
+
+plt.figure()
+plt.hist(vetor)
+plt.show()
 
 
 # fazer modelo 3D das rotas geradas
