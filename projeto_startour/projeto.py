@@ -1,3 +1,9 @@
+# Projeto desenvolvido na disciplina de Tópicos em Projeto e Análise de Algoritmos orientada pelo professor Luiz Fernando Carvalho
+# Desenvolvido por  Camila Beatriz da Silva             COLOCAR
+#                   Hevellyn Paz                        1593676
+#                   Yuri Constantino Geteruck Podmowski 2103303
+
+
 from dataclasses import dataclass
 from turtle import distance
 from unittest import skip
@@ -11,9 +17,10 @@ file = open('coordenadas.txt', 'r')
 
 coordenadas_txt = file.readlines()
 
+# Criação do vetor onde as coordenadas serão armazenadas
 coordenadas = np.arange(400, dtype=float).reshape(100, 4)
 
-for i in range(100):
+for i in range(100):  # criando o ID de cada estrela, e zerando suas coordenadas
     coordenadas[i][0] = i
     coordenadas[i][1] = 0
     coordenadas[i][2] = 0
@@ -21,13 +28,14 @@ for i in range(100):
 
 contador_linhas = 0
 
-for line in coordenadas_txt:
+for line in coordenadas_txt:  # For responsavel por correr todas as linhas do documento txt com as coordenadas
 
     aux = (['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'])
     contador = 0
     cont = 0
-    for i in range(len(line)):
+    for i in range(len(line)):  # For responsavel por percorrer todos os caracteres de cada linhas
 
+        # Condição responsavel para  ir para a proxima coordenada ou proxima linha
         if line[i] != (" "):
             aux[i-cont] = line[i]
         else:
@@ -52,7 +60,7 @@ for line in coordenadas_txt:
     contador_linhas += 1
 
 
-def randompath():
+def randompath():  # Função que a partir do sol escolhe uma estrela aleatória para ir, e a partir da nova estrela repete o processo até as estrelas se esgotarem, e entao retorna ao sol.
 
     proximo = 0
     distancia = 0
@@ -60,7 +68,7 @@ def randompath():
     atual_coord = np.array([0, 0, 0], dtype=float)
     proximo_coord = np.array([0, 0, 0], dtype=float)
 
-    posicao = np.arange(100)
+    posicao = np.arange(100)  # cria um vetor com os IDs das estrelas
     posicao = np.delete(posicao, 0)
 
     caminho = np.zeros(101, dtype=float)
@@ -70,15 +78,16 @@ def randompath():
 
     while controle:
 
-        random.shuffle(posicao)
-        proximo = posicao[0]
+        random.shuffle(posicao)  # embaralha o vetor com os IDs das estrelas
+        proximo = posicao[0]  # escolhe a posicao 0 como a próxima estrela
         caminho[i+1] = proximo
-        posicao = np.delete(posicao, 0)
+        posicao = np.delete(posicao, 0)  # retira a estrela escolhida do vetor
 
         proximo_coord[0] = coordenadas[proximo][1]
         proximo_coord[1] = coordenadas[proximo][2]
         proximo_coord[2] = coordenadas[proximo][3]
 
+        # calcula a distancia entre a estrela atual e a proxima
         distancia_temp = np.linalg.norm(atual_coord - proximo_coord)
 
         distancia += distancia_temp
@@ -92,12 +101,12 @@ def randompath():
 
         i += 1
 
-    print(distancia)
     caminho = caminho.astype(int)
-    return caminho
+
+    return distancia
 
 
-def inorderpath():  # parece errado
+def inorderpath():  # gera um caminho com a ordem em que as coordenadas aparecem no txt
 
     proximo = 0
     distancia = 0
@@ -142,7 +151,7 @@ def inorderpath():  # parece errado
     print('Distancia percorrida InOrder= ' + str(distancia))
 
 
-def closestpath():
+def closestpath():  # algoritimo guloso, calcula todas as distancias a partir do sol, escolhe a estrela que possui a menor distancia da atual(sol no primeiro caso), vai para ela e entao repete o prcesso a partir dela
 
     coordenadas_aux = np.delete(coordenadas, 0, 0)  # coordenadas sem o sol
 
@@ -209,7 +218,7 @@ def closestpath():
     return caminho
 
 
-def farestpath():
+def farestpath():  # funcao em desenvolvimento que faz o contrario da closestpath, ao ives da mais proxima, escolhe a mais distante
 
     coordenadas_aux = np.delete(coordenadas, 0, 0)  # coordenadas sem o sol
 
@@ -265,6 +274,7 @@ def farestpath():
     return caminho
 
 
+# analisa o coomportamento da funcao randompath
 def random_comportamento(tamanho):
     vetor = np.zeros(tamanho, dtype=float)
     for i in range(tamanho):
@@ -278,6 +288,7 @@ def random_comportamento(tamanho):
     plt.show()
 
 
+# fucao que recebe um vetor com os IDs da ordem do caminho gerado e plota esse caminho em 3D
 def plota_caminho(caminho):
     ax = plt.gca(projection="3d")
 
@@ -303,10 +314,6 @@ def plota_caminho(caminho):
     plt.show()
 
 
-print(randompath())
-
-plota_caminho(randompath())
-
-plota_caminho(closestpath())
+random_comportamento(10000)
 
 # fazer modelo 3D das rotas geradas
