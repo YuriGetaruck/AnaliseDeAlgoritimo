@@ -1,5 +1,5 @@
 # Projeto desenvolvido na disciplina de Tópicos em Projeto e Análise de Algoritmos orientada pelo professor Luiz Fernando Carvalho
-# Desenvolvido por  Camila Beatriz da Silva             COLOCAR
+# Desenvolvido por  Camila Beatriz da Silva             2103214
 #                   Hevellyn Paz                        1593676
 #                   Yuri Constantino Geteruck Podmowski 2103303
 
@@ -13,7 +13,7 @@ import random
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-file = open('coordenadas.txt', 'r')
+file = open('coordenadas_order.txt', 'r')
 
 coordenadas_txt = file.readlines()
 
@@ -102,6 +102,53 @@ def randompath():  # Função que a partir do sol escolhe uma estrela aleatória
         i += 1
 
     caminho = caminho.astype(int)
+    print('Distancia Percorrida RandomPath = '+str(distancia))
+
+    return caminho
+
+
+def randompath_comportamento():  # Função que a partir do sol escolhe uma estrela aleatória para ir, e a partir da nova estrela repete o processo até as estrelas se esgotarem, e entao retorna ao sol.
+
+    proximo = 0
+    distancia = 0
+
+    atual_coord = np.array([0, 0, 0], dtype=float)
+    proximo_coord = np.array([0, 0, 0], dtype=float)
+
+    posicao = np.arange(100)  # cria um vetor com os IDs das estrelas
+    posicao = np.delete(posicao, 0)
+
+    caminho = np.zeros(101, dtype=float)
+    i = 0
+
+    controle = True
+
+    while controle:
+
+        random.shuffle(posicao)  # embaralha o vetor com os IDs das estrelas
+        proximo = posicao[0]  # escolhe a posicao 0 como a próxima estrela
+        caminho[i+1] = proximo
+        posicao = np.delete(posicao, 0)  # retira a estrela escolhida do vetor
+
+        proximo_coord[0] = coordenadas[proximo][1]
+        proximo_coord[1] = coordenadas[proximo][2]
+        proximo_coord[2] = coordenadas[proximo][3]
+
+        # calcula a distancia entre a estrela atual e a proxima
+        distancia_temp = np.linalg.norm(atual_coord - proximo_coord)
+
+        distancia += distancia_temp
+
+        atual_coord[0] = proximo_coord[0]
+        atual_coord[1] = proximo_coord[1]
+        atual_coord[2] = proximo_coord[2]
+
+        if len(posicao.tolist()) == 0:
+            controle = False
+
+        i += 1
+
+    caminho = caminho.astype(int)
 
     return distancia
 
@@ -110,6 +157,7 @@ def inorderpath():  # gera um caminho com a ordem em que as coordenadas aparecem
 
     proximo = 0
     distancia = 0
+    caminho = np.zeros(101, dtype=int)
 
     atual_coord = np.array([0, 0, 0], dtype=float)
     proximo_coord = np.array([0, 0, 0], dtype=float)
@@ -125,6 +173,7 @@ def inorderpath():  # gera um caminho com a ordem em que as coordenadas aparecem
     while controle:
 
         proximo = posicao[0]
+        caminho[linha+1] = posicao[0]
         posicao = np.delete(posicao, 0)
 
         proximo_coord[0] = coordenadas[proximo][1]
@@ -149,6 +198,8 @@ def inorderpath():  # gera um caminho com a ordem em que as coordenadas aparecem
         linha += 1
 
     print('Distancia percorrida InOrder= ' + str(distancia))
+
+    return caminho
 
 
 def closestpath():  # algoritimo guloso, calcula todas as distancias a partir do sol, escolhe a estrela que possui a menor distancia da atual(sol no primeiro caso), vai para ela e entao repete o prcesso a partir dela
@@ -278,7 +329,7 @@ def farestpath():  # funcao em desenvolvimento que faz o contrario da closestpat
 def random_comportamento(tamanho):
     vetor = np.zeros(tamanho, dtype=float)
     for i in range(tamanho):
-        vetor[i] = randompath()
+        vetor[i] = randompath_comportamento()
 
     plt.figure()
     plt.hist(vetor)
@@ -305,15 +356,42 @@ def plota_caminho(caminho):
         coordenadas_z[i] = coordenadas[caminho[i]][3]
 
     ax.scatter(coordenadas_x[1:100], coordenadas_y[1:100],
-               coordenadas_z[1:100], c='r', s=15)
+               coordenadas_z[1:100], c='blue', s=15)
 
     ax.plot(coordenadas_x, coordenadas_y, coordenadas_z, color='k')
 
-    ax.scatter(0, 0, 0, c='b', s=80)
+    ax.scatter(0, 0, 0, c='orange', s=80)
 
     plt.show()
 
 
-random_comportamento(10000)
+controle = True
 
-# fazer modelo 3D das rotas geradas
+while controle:
+
+    print("----------Projeto Star Tour----------\n\n")
+    print("O que voce deseja fazer?\n")
+    print("1 - Gerar uma rota aleatória\n2 - Verificar o comportamento do caminho alatório com N caminhos\n3 - Gerar um caminho na ordem em que os dados aparecem no txt\n4 - Gerar o melhor caminho usando algoritimos gulosos\n5 - Sair")
+
+    escolha = int(input())
+
+    if ((escolha < 6) and (escolha > 0)):
+
+        if escolha == 1:
+            plota_caminho(randompath())
+
+        elif escolha == 2:
+
+            interacoes = int(input('Defina o numero de interações:'))
+            random_comportamento(interacoes)
+            print("Aguarde o processamento...")
+
+        elif escolha == 3:
+            plota_caminho(inorderpath())
+        elif escolha == 4:
+            plota_caminho(closestpath())
+        elif escolha == 5:
+            controle = False
+
+    else:
+        print("opção invalida")
