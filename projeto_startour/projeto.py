@@ -13,7 +13,7 @@ import random
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-file = open('coordenadas_order.txt', 'r')
+file = open('coordenadas.txt', 'r')
 
 coordenadas_txt = file.readlines()
 
@@ -341,7 +341,8 @@ def random_comportamento(tamanho):
 
 # fucao que recebe um vetor com os IDs da ordem do caminho gerado e plota esse caminho em 3D
 def plota_caminho(caminho):
-    ax = plt.gca(projection="3d")
+    ax = plt.figure().add_subplot(projection='3d')
+
 
     coordenadas_plot = np.arange(300, dtype=float)
     coordenadas_plot = coordenadas_plot.reshape(100, 3)
@@ -395,3 +396,4 @@ while controle:
 
     else:
         print("opção invalida")
+
